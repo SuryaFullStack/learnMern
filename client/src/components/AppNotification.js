@@ -2,22 +2,26 @@ import React, { useState, useEffect, useContext } from "react";
 import Alert from "@mui/material/Alert";
 import { AppContext } from "../AppProvider";
 
-const Notification = () => {
-  const { appGlobalData = {} } = useContext(AppContext);
-  const { notification: { type, message, show: showNotification } = {} } =
-    appGlobalData;
-  console.log("AppProvider appGlobalData=", appGlobalData);
+const AppNotification = () => {
+  const {
+    appGlobalData: {
+      notification: { type, message, show: showNotification = false } = {},
+    } = {},
+    setAppGlobalData,
+  } = useContext(AppContext);
   const [show, setShow] = useState(showNotification);
 
   useEffect(() => {
+    showNotification && setShow(showNotification);
     const timeId = setTimeout(() => {
       setShow(false);
+      setAppGlobalData({ notification: {} });
     }, 3000);
 
     return () => {
       clearTimeout(timeId);
     };
-  }, [showNotification]);
+  }, [showNotification, setAppGlobalData]);
 
   if (!show) {
     return null;
@@ -25,4 +29,4 @@ const Notification = () => {
 
   return <Alert severity={type}>{message}</Alert>;
 };
-export default Notification;
+export default AppNotification;
